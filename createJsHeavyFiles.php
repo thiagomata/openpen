@@ -58,17 +58,27 @@ $strHtml = '
 		height: 4px;
 		float: left;
 	}
-	.ones {
+	.element , .element0 {
 		background-color: red;
 	}
-	.zeros {
+	.element1 {
 		background-color: yellow;
 	}
+	.element2 {
+		background-color: green;
+	}
+	.element2 {
+		background-color: blue;
+	}
 </style></head><body>';
+
 	foreach( $arrMatrix as $intX => $arrLine ) {
 		$strHtml .= "<div>";
 		foreach( $arrLine as $intNum ) {
-			$strHtml .= ( $intNum == 1 ) ? "<span class='ones'></span>" : "<span class='zeros'>&nbsp;</span>";
+			if( $intNum == 0 )
+				$strHtml .= "<span style='background-color:rgb(0,0,0)'></span>";
+			else
+				$strHtml .= "<span style='background-color:rgb(0,0," . (255 - 3*$intNum) . ")'></span>";
 		} 
 		$strHtml .= "</div>";
 	}
@@ -102,7 +112,7 @@ function codeMatrix( $arrMatrix )
  * @param [integer new value]
  *
  */
-function makeCircle( $intCenterX , $intCenterY , $intRadius , &$arrMatrix , $intNewValue = 1 ) 
+function makeCircle( $intCenterX , $intCenterY , $intRadius , &$arrMatrix , $func = null  ) 
 {
 	foreach( $arrMatrix as $intX => $arrLine ) {
 		foreach( $arrLine as $intY => $intElement ) {
@@ -110,7 +120,11 @@ function makeCircle( $intCenterX , $intCenterY , $intRadius , &$arrMatrix , $int
 			$intDistY = pow( $intY - $intCenterY , 2 );
 			$intDistance = round( sqrt( $intDistX + $intDistY ) );
 			if ( $intDistance <= $intRadius  ) {
-				$arrMatrix[ $intX ][ $intY ] = $intNewValue;
+				if( $func == null ) {
+					$arrMatrix[ $intX ][ $intY ] = $intDistance;
+				} else {
+					$arrMatrix[ $intX ][ $intY ] = $func( $arrMatrix[ $intX ][ $intY ] );
+				}
 			}
 		}
 	}
@@ -235,7 +249,7 @@ function createJsHeavyFiles( $intOldWidth , $intOldHeight , $intNumPointer = 36)
 	 * Create the matrix
 	 */
 	$arrMatrix = createMatrix( $intWidth, $intHeight );
-	$intRadius = ceil( max( $intWidth, $intHeight ) / 2 );
+	$intRadius = ceil( max( $intWidth, $intHeight ) / 2 ) - 10;
 
 	/**
 	 * Get the $intNumPointer equidistant pointers
@@ -246,12 +260,14 @@ function createJsHeavyFiles( $intOldWidth , $intOldHeight , $intNumPointer = 36)
 	 * Generate the javascript file with the function and the 
 	 * debug file for each pointer
 	 */
+	file_put_contents( "getHeavyFuncions.js" , "" );
 	foreach( $arrPointers as $intCounter => $arrPoint )
 	{
 		$arrCopy = $arrMatrix;
+		++$arrCopy[ $arrPoint[ "x" ] ][ $arrPoint[ "y" ] ];
 		makeCircle( $arrPoint[ "x" ] , $arrPoint[ "y" ] , $intRadius , $arrCopy );
 		$strCommand = makeNumber( $arrCopy  , $intCounter );
-		file_put_contents( "getHeavyBasedOnAngle$intCounter.js" , $strCommand );
+		file_put_contents( "getHeavyFuncions.js" , $strCommand , FILE_APPEND );
 		print $intCounter . " ok <br/>\n";
 		$strOut = drawMatrix( $arrCopy );
 		file_put_contents( "Angle$intCounter.html" , $strOut );

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script src="./rgbColor.js"></script>
+	<script src="./defaultFunctions.js"></script>
+	<style>
+		.line{
+		clear: both;
+		}
+		.pixel{
+		float: left;
+		width: 10px;
+		height: 10px;
+		background-color: white;
+		border-width: 1px;
+		border-style: solid;
+		border-color: black;
+		}
+	</style>
+  </head>
+  <body>
+	<div id="paleta"></div>
+	<br/>
+	<br/>
+	<div id="origem"></div>
+	<br/>
+	<br/>
+	<div id="destino"></div>
+	<br/>
+	<br/>
+	<script>
+		var intColors = 10;
+		var intWidth = 10;
+		var intHeight = 10;
+		var intThumbWidth = 50;
+		var intThumbHeight = 50;
+
+		var arrColors = Array();
+		for( var intColor = 0; intColor < 255; intColor += intColors )
+		{
+			arrColors.push( Array( intColor , intColor , intColor ) );
+		}
+		for( var intColor = 0; intColor < 255; intColor += intColors )
+		{
+			arrColors.push( Array( 255 - intColor , 255 - intColor , intColor ) );
+		}
+		for( var intColor = 0; intColor < 255; intColor += intColors )
+		{
+			arrColors.push( Array( intColor , 255 - intColor , 255 - intColor ) );
+		}
+		for( var intColor = 0; intColor < 255; intColor += intColors )
+		{
+			arrColors.push( Array( 255 - intColor , intColor , 255 - intColor ) );
+		}
+		
+		for( var intElement = 0; intElement < arrColors.length; intElement++ )
+		{
+			var objPencil = document.createElement("span");
+			objPencil.className = "pixel";
+			objPencil.style.backgroundColor = "rgb(" + arrColors[intElement].join() + ")";
+			objPencil.onclick = function(){ window.pencilColor = this.style.backgroundColor };
+			document.getElementById("paleta").appendChild(objPencil);
+		}
+		
+
+		for( var x = 0; x < intWidth; x++ )
+		{
+			var objLine = document.createElement("div");
+			objLine.className = "line";
+			for( var y = 0; y <  intHeight; y++ )
+			{
+				var objPixel = document.createElement("span");
+				objPixel.className = "pixel";
+				objLine.appendChild(objPixel);
+				objPixel.onclick = function(){ this.style.backgroundColor = window.pencilColor; window.makeThumbnail() };
+			}
+			document.getElementById("origem").appendChild( objLine );
+		}
+
+		window.makeThumbnail = function makeThumbnail()
+		{
+			var arrMatrixRed = createMatrix( intWidth, intHeight , 0);
+			var arrMatrixGreen = createMatrix( intWidth, intHeight , 0);
+			var arrMatrixBlue = createMatrix( intWidth, intHeight );
+			var arrLines = document.getElementById("origem").childNodes;
+			for( var y = 0; y < arrLines.length ; y++ )
+			{
+				var objLine = arrLines[y];
+				var arrPixels = objLine.getElementsByTagName("span");
+
+				for( var x = 0; x < arrPixels.length ; x++ )
+				{
+					var objPixel = arrPixels[x];
+					var strColor = objPixel.style.backgroundColor;
+					if( strColor == false )
+					{
+						strColor = "rgb(255,255,255)";
+					}
+					var objColor = new RGBColor( strColor );
+					arrMatrixRed[x][y]   = objColor.r;
+					arrMatrixGreen[x][y] = objColor.b;
+					arrMatrixBlue[x][y]  = objColor.g;
+				}
+			}
+
+			arrThumbMatrixRed = expandMatrix( arrMatrixRed, intThumbWidth, intThumbHeight );
+			arrThumbMatrixBlue = expandMatrix( arrMatrixGreen, intThumbWidth, intThumbHeight );
+			arrThumbMatrixGreen = expandMatrix( arrMatrixBlue, intThumbWidth, intThumbHeight );
+			document.getElementById("destino").innerHTML = "";
+			for( var y = 0; y < arrThumbMatrixRed[0].length; y++ )
+			{
+				var objLine = document.createElement("div");
+				objLine.className = "line";
+
+				for( var x = 0; x < arrThumbMatrixRed.length; x++ )
+				{
+					var intRed = Math.round(arrThumbMatrixRed[x][y]);
+					var intGreen = Math.round(arrThumbMatrixGreen[x][y]);
+					var intBlue = Math.round(arrThumbMatrixBlue[x][y]);
+					var objPixel = document.createElement("span");
+					objPixel.className = "pixel";
+					objLine.appendChild(objPixel);
+					objPixel.style.backgroundColor = "rgb("+intRed+","+intGreen+","+intBlue+")";
+					objPixel.title = "rgb("+intRed+","+intGreen+","+intBlue+")";
+					objLine.appendChild( objPixel );
+				}
+				document.getElementById("destino").appendChild(objLine);
+			}
+		}
+
+	</script>
+  </body>
+</html>
