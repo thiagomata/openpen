@@ -10,14 +10,21 @@ function expandMatrix( arrMatrix, intNewWidth, intNewHeight )
 	var intProportionX =   intNewWidth / intMatrixWidth;
 	var intProportionY =  intNewHeight / intMatrixHeight;
 
+    intProportionY /= 2;
+    intProportionX /= 2;
+
 	arrNewMatrix = arrMatrix;
 	arrFixedMatrix = createMatrix( intMatrixWidth, intMatrixHeight , 1 );
 	var intXCounter = 0;
 	intNewWidth--;
-	for( var x = 0 ; x < intNewWidth; x++ )
+
+	for( var x = 0 ; x < intNewWidth; )
 	{
-		//console.log("lidando com a coluna " + x );
-		if( intXCounter > 1 )
+	    console.log( intXCounter );
+	    intXCounter += intProportionX;
+	    console.log( intXCounter );
+
+		while( intXCounter >= 1 && x < intNewWidth )
 		{
 			arrNewMatrix = addColumn( arrNewMatrix , x  , 0 );
 			if( isNaN( arrNewMatrix.length ) )
@@ -25,23 +32,32 @@ function expandMatrix( arrMatrix, intNewWidth, intNewHeight )
 				throw new Error( "add column crashed" );
 			}
 			arrFixedMatrix = addColumn( arrFixedMatrix , x , 0 );
+	        console.log( intXCounter );
 			intXCounter--;
+    	    console.log( intXCounter );
+    		x++;
 		}
-		else
-		{
-			intXCounter += intProportionX;
-		}
-		/*
+
+		x++;
+	    console.log( intXCounter );
+		intXCounter += intProportionX;
+	    console.log( intXCounter );
+	    intXCounter--;
+
 		while( intXCounter >= 1 && x < intNewWidth )
 		{
-			intXCounter--;
-			//console.log("lidando com a coluna " + x );
 			arrNewMatrix = addColumn( arrNewMatrix , x  , 0 );
+			if( isNaN( arrNewMatrix.length ) )
+			{
+				throw new Error( "add column crashed" );
+			}
 			arrFixedMatrix = addColumn( arrFixedMatrix , x , 0 );
-			x++;
+	        console.log( intXCounter );
+			intXCounter--;
+    	    console.log( intXCounter );
+    		x++;
 		}
-		intXCounter += intProportionX;
-		*/
+
 	}
 	if( isNaN( arrNewMatrix.length ) )
 	{
@@ -63,18 +79,32 @@ function expandMatrix( arrMatrix, intNewWidth, intNewHeight )
 
 	var intYCounter = 0;
 	intNewHeight--;
-	for( var y = 0 ; y < intNewHeight; y++ )
+	for( var y = 0 ; y < intNewHeight;)
 	{
-		console.log( "lidando com a linha " + y );
+		intYCounter += intProportionY;
+
 		while( intYCounter >= 1 && y < intNewHeight )
 		{
 
 			intYCounter--;
 			arrNewMatrix = addLine( arrNewMatrix , y , 0 );
 			arrFixedMatrix = addLine( arrFixedMatrix , y , 0 );
-			y++;
+            y++;
 		}
+
+        y++;
 		intYCounter += intProportionY;
+		intYCounter--;
+
+		while( intYCounter >= 1 && y < intNewHeight )
+		{
+
+			intYCounter--;
+			arrNewMatrix = addLine( arrNewMatrix , y , 0 );
+			arrFixedMatrix = addLine( arrFixedMatrix , y , 0 );
+            y++;
+		}
+
 	}	
 	while( arrNewMatrix[0].length < (intNewHeight + 1 ) )
 	{
@@ -276,12 +306,13 @@ function smoothMatrix( arrMatrix , arrFixedMatrix )
 				 * 	-- G	0- H	+- I
 				 */
 				var arrElements = Array();
+				var arrVerticalElements = Array();
 
 				// A -+
 				if( x > 0 && y < intMaxY ) 
 				{
 					//console.log( "-+ " + "[" + (x-1) + "],[" + (y+1) + "]" + arrMatrix[x - 1 ][y + 1] );
-					arrElements.push( arrMatrix[x - 1 ][y + 1] );
+					arrVerticalElements.push( arrMatrix[x - 1 ][y + 1] );
 				}
 				// B 0+
 				if( y < intMaxY ) 
@@ -293,7 +324,7 @@ function smoothMatrix( arrMatrix , arrFixedMatrix )
 				if( x < intMaxX && y < intMaxY ) 
 				{
 					//console.log( "++ " + "[" + (x+1) + "],[" + (y+1) + "]" + arrMatrix[x + 1 ][y + 1] );
-					arrElements.push( arrMatrix[x + 1 ][y + 1] );
+					arrVerticalElements.push( arrMatrix[x + 1 ][y + 1] );
 				}
 				// D -0
 				if( x > 0 ) 
@@ -315,7 +346,7 @@ function smoothMatrix( arrMatrix , arrFixedMatrix )
 				if( x > 0 && y > 0 ) 
 				{
 					//console.log( "--" + "[" + (x-1) + "],[" + (y-1) + "]" + arrMatrix[x - 1 ][y - 1] );
-					arrElements.push( arrMatrix[x - 1 ][y - 1] );
+					arrVerticalElements.push( arrMatrix[x - 1 ][y - 1] );
 				}
 				// H 0-
 				if( y > 0 ) 
@@ -327,10 +358,14 @@ function smoothMatrix( arrMatrix , arrFixedMatrix )
 				if( x < intMaxX && y > 0 ) 
 				{
 					//console.log( "+-" + "[" + (x+1) + "],[" + (y-1) + "]" + arrMatrix[x + 1 ][y - 1] );
-					arrElements.push( arrMatrix[x + 1 ][y - 1] );
+					arrVerticalElements.push( arrMatrix[x + 1 ][y - 1] );
 				}
 				
-				arrNewMatrix[x][y] = Math.round( 1000 * arrElements.sum() / arrElements.length ) / 1000;
+				arrNewMatrix[x][y] = Math.round(
+				    (  ( 1000 * arrElements.sum() ) + ( 1000 * arrVerticalElements.sum() / 1.4142 ) )
+				    /
+				    (  ( arrElements.length ) + ( arrVerticalElements.length / 1.4142 ) )
+                ) / 1000;
 				if( isNaN( arrNewMatrix[x][y] ) )
 				{
 					//console.log( "x:"+x+",y:"+y);
