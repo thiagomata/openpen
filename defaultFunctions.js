@@ -15,7 +15,12 @@ function expandMatrixRGB( objMatrixRGB, intNewWidth, intNewHeight )
 	};
 }
 
-function expandMatrix( arrMatrix, intNewWidth, intNewHeight, strColorName )
+Array.prototype.sum = function() {
+	for (var i = 0, L = this.length, sum = 0; i < L; sum += this[i++]);
+	return sum;
+}
+
+function expandMatrix( arrMatrix, intNewWidth, intNewHeight, strColor )
 {
 	var intMatrixWidth = arrMatrix.length;
 	var intMatrixHeight = arrMatrix[0].length;
@@ -126,27 +131,10 @@ function expandMatrix( arrMatrix, intNewWidth, intNewHeight, strColorName )
 		arrFixedMatrix = addLine( arrFixedMatrix , intNewLine, 100 );
 	}
 
-	debugMatrix( arrNewMatrix, arrFixedMatrix, strColorName );
+	debugMatrix( arrNewMatrix,arrFixedMatrix,strColor  );
 //	return arrNewMatrix;
 	return loopSmooth(arrNewMatrix,arrFixedMatrix);
 }
-
-// function drawMatrix( arrMatrix )
-// {
-// 	var strReturn = "";
-// 	for( var x = 0; x < arrMatrix.length; x++ )
-// 	{
-// 		var arrColumn = arrMatrix[x];
-// 		strReturn += "[";
-// 		for( var y = 0; y < arrColumn.length; y++ )
-// 		{
-// 			strReturn += "\t("+x+","+y+")"+arrColumn[y] + ",";
-// 		}
-// 		strReturn += "]\n";
-// 	}
-
-// 	return strReturn;
-// }
 
 function createMatrix( intWidth, intHeight , dblValue )
 {
@@ -218,7 +206,7 @@ function addColumn( arrMatrix, intColumnPosition, dblValue )
 			throw new Error( "to distance to create column. Length:" +  arrMatrix.length + ", column:" + intColumnPosition );
 		}
 	}
-	//console.log(debugMatrix(arrNewMatrix));
+	//console.log(drawMatrix(arrNewMatrix));
 	return arrNewMatrix;	
 }
 
@@ -291,7 +279,7 @@ function loopSmooth( arrMatrix , arrFixedMatrix )
 		arrNewMatrix = smoothMatrix( arrMatrix, arrFixedMatrix );
 		if( intCount > 500 )
 		{
- 			// console.log( debugMatrix( arrNewMatrix ) );
+			//console.log( drawMatrix( arrNewMatrix ) );
 			return arrNewMatrix;
 			//throw new Error( "too complex" );
 		}
@@ -382,7 +370,7 @@ function smoothMatrix( arrMatrix , arrFixedMatrix )
 				{
 					//console.log( "x:"+x+",y:"+y);
 					//console.log( arrElements );
-					// console.log( debugMatrix( arrMatrix ) );
+					//console.log( drawMatrix( arrMatrix ) );
 					//console.log( arrMatrix );
 					window.bug = arrMatrix;
 					throw new Error( "That's why i hate javascript" );
