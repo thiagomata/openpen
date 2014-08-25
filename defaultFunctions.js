@@ -3,7 +3,19 @@ Array.prototype.sum = function() {
 	return sum;
 }
 
-function expandMatrix( arrMatrix, intNewWidth, intNewHeight )
+function expandMatrixRGB( objMatrixRGB, intNewWidth, intNewHeight ) 
+{
+	var arrNewMatrixRed   = expandMatrix( objMatrixRGB.red,   intNewWidth, intNewHeight, 'red' );
+	var arrNewMatrixGreen = expandMatrix( objMatrixRGB.green, intNewWidth, intNewHeight, 'green' );
+	var arrNewMatrixBlue  = expandMatrix( objMatrixRGB.blue,  intNewWidth, intNewHeight, 'blue' );
+	return {
+		red:   arrNewMatrixRed, 
+		green: arrNewMatrixGreen, 
+		blue:  arrNewMatrixBlue 
+	};
+}
+
+function expandMatrix( arrMatrix, intNewWidth, intNewHeight, strColorName )
 {
 	var intMatrixWidth = arrMatrix.length;
 	var intMatrixHeight = arrMatrix[0].length;
@@ -20,9 +32,9 @@ function expandMatrix( arrMatrix, intNewWidth, intNewHeight )
 
 	for( var x = 0 ; x < intNewWidth; )
 	{
-	    console.log( intXCounter );
+	    // console.log( intXCounter );
 	    intXCounter += intProportionX;
-	    console.log( intXCounter );
+	    // console.log( intXCounter );
 
 		while( intXCounter >= 1 && x < intNewWidth )
 		{
@@ -32,16 +44,16 @@ function expandMatrix( arrMatrix, intNewWidth, intNewHeight )
 				throw new Error( "add column crashed" );
 			}
 			arrFixedMatrix = addColumn( arrFixedMatrix , x , 0 );
-	        console.log( intXCounter );
+	        // console.log( intXCounter );
 			intXCounter--;
-    	    console.log( intXCounter );
+    	    // console.log( intXCounter );
     		x++;
 		}
 
 		x++;
-	    console.log( intXCounter );
+	    // console.log( intXCounter );
 		intXCounter += intProportionX;
-	    console.log( intXCounter );
+	    // console.log( intXCounter );
 	    intXCounter--;
 
 		while( intXCounter >= 1 && x < intNewWidth )
@@ -52,9 +64,9 @@ function expandMatrix( arrMatrix, intNewWidth, intNewHeight )
 				throw new Error( "add column crashed" );
 			}
 			arrFixedMatrix = addColumn( arrFixedMatrix , x , 0 );
-	        console.log( intXCounter );
+	        // console.log( intXCounter );
 			intXCounter--;
-    	    console.log( intXCounter );
+    	    // console.log( intXCounter );
     		x++;
 		}
 
@@ -109,32 +121,32 @@ function expandMatrix( arrMatrix, intNewWidth, intNewHeight )
 	while( arrNewMatrix[0].length < (intNewHeight + 1 ) )
 	{
 		var intNewLine = arrNewMatrix[0].length;
-		console.log( "lidando com a linha " + intNewLine );
+		// console.log( "lidando com a linha " + intNewLine );
 		arrNewMatrix = addLine( arrNewMatrix , intNewLine , 0 );
 		arrFixedMatrix = addLine( arrFixedMatrix , intNewLine, 100 );
 	}
 
-	console.log( drawMatrix( arrNewMatrix ) );
+	debugMatrix( arrNewMatrix, arrFixedMatrix, strColorName );
 //	return arrNewMatrix;
 	return loopSmooth(arrNewMatrix,arrFixedMatrix);
 }
 
-function drawMatrix( arrMatrix )
-{
-	var strReturn = "";
-	for( var x = 0; x < arrMatrix.length; x++ )
-	{
-		var arrColumn = arrMatrix[x];
-		strReturn += "[";
-		for( var y = 0; y < arrColumn.length; y++ )
-		{
-			strReturn += "\t("+x+","+y+")"+arrColumn[y] + ",";
-		}
-		strReturn += "]\n";
-	}
+// function drawMatrix( arrMatrix )
+// {
+// 	var strReturn = "";
+// 	for( var x = 0; x < arrMatrix.length; x++ )
+// 	{
+// 		var arrColumn = arrMatrix[x];
+// 		strReturn += "[";
+// 		for( var y = 0; y < arrColumn.length; y++ )
+// 		{
+// 			strReturn += "\t("+x+","+y+")"+arrColumn[y] + ",";
+// 		}
+// 		strReturn += "]\n";
+// 	}
 
-	return strReturn;
-}
+// 	return strReturn;
+// }
 
 function createMatrix( intWidth, intHeight , dblValue )
 {
@@ -206,7 +218,7 @@ function addColumn( arrMatrix, intColumnPosition, dblValue )
 			throw new Error( "to distance to create column. Length:" +  arrMatrix.length + ", column:" + intColumnPosition );
 		}
 	}
-	//console.log(drawMatrix(arrNewMatrix));
+	//console.log(debugMatrix(arrNewMatrix));
 	return arrNewMatrix;	
 }
 
@@ -279,7 +291,7 @@ function loopSmooth( arrMatrix , arrFixedMatrix )
 		arrNewMatrix = smoothMatrix( arrMatrix, arrFixedMatrix );
 		if( intCount > 500 )
 		{
-			//console.log( drawMatrix( arrNewMatrix ) );
+ 			// console.log( debugMatrix( arrNewMatrix ) );
 			return arrNewMatrix;
 			//throw new Error( "too complex" );
 		}
@@ -299,7 +311,7 @@ function smoothMatrix( arrMatrix , arrFixedMatrix )
 		arrNewMatrix[x] = Array();
 		for( var y = 0; y < arrMatrix[0].length; y++ )
 		{
-			if( arrFixedMatrix[x][y] == 0 )
+			if( arrFixedMatrix[x][y] !== 1 )
 			{
 				/**	-+ A	0+ B	++ C
 				 *	-0 D	00 E	+0 F
@@ -370,7 +382,7 @@ function smoothMatrix( arrMatrix , arrFixedMatrix )
 				{
 					//console.log( "x:"+x+",y:"+y);
 					//console.log( arrElements );
-					//console.log( drawMatrix( arrMatrix ) );
+					// console.log( debugMatrix( arrMatrix ) );
 					//console.log( arrMatrix );
 					window.bug = arrMatrix;
 					throw new Error( "That's why i hate javascript" );

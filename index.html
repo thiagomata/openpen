@@ -18,6 +18,10 @@
 		border-style: solid;
 		border-color: black;
 		}
+		.debug {
+			float: left;
+			padding: 10px;
+		}
 	</style>
   </head>
   <body>
@@ -25,45 +29,124 @@
 	<br/>
 	<br/>
 	<div id="origem"></div>
-	<br/>
+	&lt;== click here
+	<br/> 
 	<br/>
 	<div id="destino"></div>
 	<br/>
 	<br/>
+	<div class="debug" id="debug-red"></div>
+	<div class="debug"  id="debug-green"></div>
+	<div class="debug"  id="debug-blue"></div>
+	<br/>
+	<br/>
 	<script>
-		var intColors = 10;
-		var intWidth = 3;
-		var intHeight = 3;
-		var intThumbWidth = 13;
-		var intThumbHeight = 13;
 
-		var arrColors = Array();
-		for( var intColor = 0; intColor < 255; intColor += intColors )
-		{
-			arrColors.push( Array( intColor , intColor , intColor ) );
+		function debugMatrix( arrMatrix, arrFixedMatrix, strColor ) {
+			drawMatrix(
+				{
+					red:   strColor == 'red'   ? arrMatrix : createMatrix( arrMatrix.length, arrMatrix[0].length, 0 ), 
+					green: strColor == 'green' ? arrMatrix : createMatrix( arrMatrix.length, arrMatrix[0].length, 0 ),
+					blue:  strColor == 'blue'  ? arrMatrix : createMatrix( arrMatrix.length, arrMatrix[0].length, 0 )
+				}, 
+				document.getElementById( "debug-" + strColor  )
+			)
+			drawFixed( document.getElementById( "debug-" + strColor  ), arrFixedMatrix );
 		}
-		for( var intColor = 0; intColor < 255; intColor += intColors )
-		{
-			arrColors.push( Array( 255 - intColor , 255 - intColor , intColor ) );
+
+		function drawFixed( objDivMatrix, arrFixedMatrix ) {
+			var arrLines = objDivMatrix.childNodes;
+			for( var y = 0; y < arrLines.length ; y++ )
+			{
+				var objLine = arrLines[y];
+				var arrPixels = objLine.getElementsByTagName("span");
+
+				for( var x = 0; x < arrPixels.length ; x++ )
+				{
+					var objPixel = arrPixels[x];
+					if( arrFixedMatrix[x][y] == 1) {
+						objPixel.style.borderWidth = "1px";
+						objPixel.style.borderColor = "white";
+						objPixel.style.borderStyle = "solid";
+					}
+				}
+			}			
 		}
-		for( var intColor = 0; intColor < 255; intColor += intColors )
-		{
-			arrColors.push( Array( intColor , 255 - intColor , 255 - intColor ) );
+		function pickColor( arrMatrix, x, y, notFound ) {
+			if( arrMatrix[x] == null ) {
+				return notFound;
+			}
+			if( arrMatrix[x][y] == null ) {
+				return notFound;
+			}
+			return arrMatrix[x][y];
 		}
-		for( var intColor = 0; intColor < 255; intColor += intColors )
-		{
-			arrColors.push( Array( 255 - intColor , intColor , 255 - intColor ) );
+
+		function drawMatrix( objMatrixRGB, objDiv ) {
+			console.log( "drawMatrix ", objMatrixRGB );
+			objDiv.innerHTML = "";
+			var arrMatrixRed   = objMatrixRGB.red;
+			var arrMatrixGreen = objMatrixRGB.green;
+			var arrMatrixBlue  = objMatrixRGB.blue;
+			for( var y = 0; y < arrMatrixRed[0].length; y++ )
+			{
+				var objLine = document.createElement("div");
+				objLine.className = "line";
+
+				for( var x = 0; x < arrMatrixRed.length; x++ )
+				{
+					var intRed   = Math.round(pickColor(arrMatrixRed, x, y, 255) );
+					var intGreen = Math.round(pickColor(arrMatrixGreen, x, y, 0) );
+					var intBlue  = Math.round(pickColor(arrMatrixBlue, x, y, 0) );
+					var objPixel = document.createElement("span");
+					objPixel.className = "pixel";
+					objLine.appendChild(objPixel);
+					objPixel.style.backgroundColor = "rgb("+intRed+","+intGreen+","+intBlue+")";
+					objPixel.title = "["+x+","+y+"] rgb("+intRed+","+intGreen+","+intBlue+")";
+					objLine.appendChild( objPixel );
+				}
+				objDiv.appendChild(objLine);
+			}			
 		}
-		
-		for( var intElement = 0; intElement < arrColors.length; intElement++ )
-		{
-			var objPencil = document.createElement("span");
-			objPencil.className = "pixel";
-			objPencil.style.backgroundColor = "rgb(" + arrColors[intElement].join() + ")";
-			objPencil.onclick = function(){ window.pencilColor = this.style.backgroundColor };
-			document.getElementById("paleta").appendChild(objPencil);
+
+		function makePallete() {
+			var intColors = 10;
+			var arrColors = Array();
+			for( var intColor = 0; intColor < 255; intColor += intColors )
+			{
+				arrColors.push( Array( intColor , intColor , intColor ) );
+			}
+			for( var intColor = 0; intColor < 255; intColor += intColors )
+			{
+				arrColors.push( Array( 255 - intColor , 255 - intColor , intColor ) );
+			}
+			for( var intColor = 0; intColor < 255; intColor += intColors )
+			{
+				arrColors.push( Array( intColor , 255 - intColor , 255 - intColor ) );
+			}
+			for( var intColor = 0; intColor < 255; intColor += intColors )
+			{
+				arrColors.push( Array( 255 - intColor , intColor , 255 - intColor ) );
+			}
+
+			for( var intElement = 0; intElement < arrColors.length; intElement++ )
+			{
+				var objPencil = document.createElement("span");
+				objPencil.className = "pixel";
+				objPencil.style.backgroundColor = "rgb(" + arrColors[intElement].join() + ")";
+				objPencil.onclick = function(){ window.pencilColor = this.style.backgroundColor };
+				document.getElementById("paleta").appendChild(objPencil);
+			}
+			window.pencilColor = "rgb(255,0,0)";
 		}
-		
+
+		makePallete();
+
+		var intWidth = 5;
+		var intHeight = 5;
+		var intThumbWidth = 20;
+		var intThumbHeight = 12;
+
 
 		for( var x = 0; x < intWidth; x++ )
 		{
@@ -83,7 +166,7 @@
 		{
 			var arrMatrixRed = createMatrix( intWidth, intHeight , 0);
 			var arrMatrixGreen = createMatrix( intWidth, intHeight , 0);
-			var arrMatrixBlue = createMatrix( intWidth, intHeight );
+			var arrMatrixBlue = createMatrix( intWidth, intHeight, 0 );
 			var arrLines = document.getElementById("origem").childNodes;
 			for( var y = 0; y < arrLines.length ; y++ )
 			{
@@ -100,34 +183,25 @@
 					}
 					var objColor = new RGBColor( strColor );
 					arrMatrixRed[x][y]   = objColor.r;
-					arrMatrixGreen[x][y] = objColor.b;
-					arrMatrixBlue[x][y]  = objColor.g;
+					arrMatrixGreen[x][y] = objColor.g;
+					arrMatrixBlue[x][y]  = objColor.b;
 				}
 			}
 
-			arrThumbMatrixRed = expandMatrix( arrMatrixRed, intThumbWidth, intThumbHeight );
-			arrThumbMatrixBlue = expandMatrix( arrMatrixGreen, intThumbWidth, intThumbHeight );
-			arrThumbMatrixGreen = expandMatrix( arrMatrixBlue, intThumbWidth, intThumbHeight );
-			document.getElementById("destino").innerHTML = "";
-			for( var y = 0; y < arrThumbMatrixRed[0].length; y++ )
-			{
-				var objLine = document.createElement("div");
-				objLine.className = "line";
-
-				for( var x = 0; x < arrThumbMatrixRed.length; x++ )
+			var objThumbMatrix =  expandMatrixRGB(
 				{
-					var intRed = Math.round(arrThumbMatrixRed[x][y]);
-					var intGreen = Math.round(arrThumbMatrixGreen[x][y]);
-					var intBlue = Math.round(arrThumbMatrixBlue[x][y]);
-					var objPixel = document.createElement("span");
-					objPixel.className = "pixel";
-					objLine.appendChild(objPixel);
-					objPixel.style.backgroundColor = "rgb("+intRed+","+intGreen+","+intBlue+")";
-					objPixel.title = "rgb("+intRed+","+intGreen+","+intBlue+")";
-					objLine.appendChild( objPixel );
-				}
-				document.getElementById("destino").appendChild(objLine);
-			}
+					red:arrMatrixRed,
+					green:arrMatrixGreen,
+					blue:arrMatrixBlue
+				},
+				intThumbWidth,
+				intThumbHeight
+			);
+
+			drawMatrix( 
+				objThumbMatrix, 
+				document.getElementById("destino")
+			);
 		}
 
 	</script>
