@@ -41,6 +41,10 @@
 	<br/>
 	<br/>
 	<script>
+		var intWidth = 16;
+		var intHeight = 16;
+		var intThumbWidth = 11;
+		var intThumbHeight = 20;
 
 		function debugMatrix( arrMatrix, arrFixedMatrix, strColor ) {
 			drawMatrix(
@@ -142,26 +146,37 @@
 
 		makePallete();
 
-		var intWidth = 5;
-		var intHeight = 5;
-		var intThumbWidth = 17;
-		var intThumbHeight = 17;
-
-
-		for( var x = 0; x < intWidth; x++ )
-		{
-			var objLine = document.createElement("div");
-			objLine.className = "line";
-			for( var y = 0; y <  intHeight; y++ )
-			{
-				var objPixel = document.createElement("span");
-				objPixel.className = "pixel";
-				objLine.appendChild(objPixel);
-				objPixel.onclick = function(){ this.style.backgroundColor = window.pencilColor; window.makeThumbnail() };
-			}
-			document.getElementById("origem").appendChild( objLine );
-		}
-
+                window.draw = function() 
+                {
+                    for( var x = 0; x < intWidth; x++ )
+                    {
+                            var objLine = document.createElement("div");
+                            objLine.className = "line";
+                            for( var y = 0; y <  intHeight; y++ )
+                            {
+                                    var objPixel = document.createElement("span");
+                                    var dy = (y - intHeight / 2);
+                                    var dx = (x - intWidth / 2);
+                                    var distance = Math.sqrt( dx*dx + dy*dy );
+                                    var radio = 7;
+                                    if( distance < Math.round(radio) ) {
+                                        var color = Math.round( 255 * ( 1 - distance/(radio+1) ) );
+                                        console.log("color=",color);
+                                        var rgbColor = "rgb("+color+","+color+","+color+")";
+                                        console.log(rgbColor);
+                                        objPixel.style.backgroundColor = rgbColor;
+                                    } else if ( x > intWidth * 0.6 ) {
+                                        objPixel.style.backgroundColor = "rgb(0,0," + Math.round( 200 * x / intWidth ) + ")"  ;
+                                    }
+                                    objPixel.className = "pixel";
+                                    objLine.appendChild(objPixel);
+                                    objPixel.onclick = function(){ this.style.backgroundColor = window.pencilColor; window.makeThumbnail() };
+                            }
+                            document.getElementById("origem").appendChild( objLine );
+                    }
+                    window.makeThumbnail();
+                }
+                
 		window.makeThumbnail = function makeThumbnail()
 		{
 			var arrMatrixRed = createMatrix( intWidth, intHeight , 0);
@@ -203,7 +218,7 @@
 				document.getElementById("destino")
 			);
 		}
-
+                window.draw();
 	</script>
   </body>
 </html>

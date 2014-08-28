@@ -29,30 +29,87 @@ function expandMatrix( arrMatrix, intNewWidth, intNewHeight, strColor )
 
     arrNewMatrix = arrMatrix;
     arrFixedMatrix = createMatrix( intMatrixWidth, intMatrixHeight , 1 );
-    var intXCounter = -1 * intProportionX / 2;
 
-    for( var x = 0 ; x < (intNewWidth ); )
-    {
-        intXCounter += intProportionX;
-
-        while( intXCounter > 1 && ( x ) < ( intNewWidth ) )
+    var intXCounter;
+    var x;
+    if( intNewWidth > intMatrixWidth ) {
+        intXCounter = -1 * intProportionX / 2;
+        x = 0;
+        while( x < ( intNewWidth ) )
         {
-            console.log("loop column 1");
-            arrNewMatrix = addColumn( arrNewMatrix , x  , 0 );
-            arrFixedMatrix = addColumn( arrFixedMatrix , x , 0 );
+            intXCounter += intProportionX;
+
+            while( intXCounter > 1 && ( x ) < ( intNewWidth ) )
+            {
+                console.log("loop column 1");
+                arrNewMatrix = addColumn( arrNewMatrix, x, 0 );
+                arrFixedMatrix = addColumn( arrFixedMatrix, x, 0 );
+                intXCounter--;
+                x++;
+            }
+
+            x++;
             intXCounter--;
+        }
+        while( arrNewMatrix.length < ( intNewWidth ) )
+        {
+            console.log("loop column 3");
+            var intNewColumn = arrNewMatrix.length - 1;
+            arrNewMatrix = addColumn( arrNewMatrix, intNewColumn, 0 );
+            arrFixedMatrix = addColumn( arrFixedMatrix, intNewColumn, 0 );
+        }
+    } else {
+        intXCounter = 0;
+        var arrMerge = [];
+        x = 0;
+        var xLoop = 0;
+        var xGain = 0;
+        var xWeight = 1;
+        var intProportionX =    intMatrixWidth / intNewWidth;
+        /*
+         * x = 0, intNewWidth = 
+         */
+        while( x < ( intNewWidth ) ) 
+        {
+            /* 
+             * intProportionX = 1.6 intXCounter = 1.6
+             */
+            intXCounter += intProportionX;
+
+            /**
+             * intXCounter = 1.6
+             * intXCounter = 0.6  xWeigth = 0.6
+             */
+            while( intXCounter > 0 )
+            {
+                /**
+                 * x = 0, xLoop = 0, weight: 1.0
+                 * x = 0, xLoop = 1. weight: 0.6
+                 * x = 1, xLoop = 1, weight: 0.4
+                 * x = 1, xLoop = 2. weight: 1.0
+                 * x = 1, xLoop = 3. weight: 0.2
+                 */
+                arrMerge.push( { xBefore: xLoop, xAfter: x, weight: xWeight } );
+                intXCounter -= xWeight;
+                xGain += xWeight;
+                xWeight = 1 - xWeight;
+
+                if( xWeight === 0 ) {
+                    xWeight = Math.min(1, intXCounter);
+                    // xLoop++;
+                }
+
+                if( xGain === 1 ) {
+                    xLoop++;
+                    xWeight = Math.min(1, intXCounter);
+                    xGain = 0;
+                }
+
+            }
             x++;
         }
-
-        x++;
-        intXCounter--;
-    }
-    while( arrNewMatrix.length < ( intNewWidth ) )
-    {
-        console.log("loop column 3");
-        var intNewColumn = arrNewMatrix.length - 1;
-        arrNewMatrix = addColumn( arrNewMatrix , intNewColumn , 0 );
-        arrFixedMatrix = addColumn( arrFixedMatrix , intNewColumn , 0 );
+        arrNewMatrix = mergeColumns( arrNewMatrix, arrMerge );
+        arrFixedMatrix = createMatrix( arrNewMatrix.length, arrNewMatrix[0].length, 1 );
     }
 
     var intYCounter = -1 * intProportionY / 2;
@@ -124,6 +181,7 @@ function addColumn( arrMatrix, intColumnPosition, dblValue )
     var xMatrix = 0;
 
     var intLoopCount = 0;
+
     for( var x = 0; x <= arrMatrix.length; x++ , xMatrix++ )
     {
         intLoopCount++;
@@ -133,17 +191,14 @@ function addColumn( arrMatrix, intColumnPosition, dblValue )
             throw new Error( "something bad happened" );
         }
 
-        //console.log( "x = " + x + " posicao = " + intColumnPosition + " length = " + arrMatrix.length );
-        if( x == intColumnPosition )
+        if( x === intColumnPosition )
         {
-            //console.log( "add new column" );
             arrNewMatrix[x] = createVector( arrMatrix[0].length , dblValue );
             x++;
         }
 
         if( xMatrix < arrMatrix.length )
         {
-            //console.log("copy old column");
             arrNewMatrix[x] = Array();
             var yMatrix = 0;
             for( var y = 0; y < arrMatrix[0].length; y++, yMatrix++ )
@@ -179,15 +234,15 @@ function addLine( arrMatrix, intLinePosition, dblValue )
                 throw new Error( "something bad happened" );
             }
 
-            if( y == intLinePosition )
+            if( y === intLinePosition )
             {
                 arrNewMatrix[x][y] = dblValue;
                 y++;
             }
 
-            if( typeof arrMatrix[xMatrix][yMatrix] == "undefined" || arrMatrix[xMatrix][yMatrix] == null )
+            if( typeof arrMatrix[xMatrix][yMatrix] === "undefined" || arrMatrix[xMatrix][yMatrix] === null )
             {
-                if( yMatrix == arrMatrix[xMatrix].length )
+                if( yMatrix === arrMatrix[xMatrix].length )
                 {
                     arrNewMatrix[x][y] = dblValue;
                 }
@@ -207,13 +262,13 @@ function addLine( arrMatrix, intLinePosition, dblValue )
 
 function compareMatrix( arrMatrixA , arrMatrixB )
 {
-    if( arrMatrixA.length != arrMatrixB.length ) return false;
-    if( arrMatrixA[0].length != arrMatrixB[0].length ) return false;    
+    if( arrMatrixA.length !== arrMatrixB.length ) return false;
+    if( arrMatrixA[0].length !== arrMatrixB[0].length ) return false;    
     for( var x = 0; x < arrMatrixA.length; x++ )
     {
         for( var y = 0; y < arrMatrixA[0].length; y++ )
         {
-            if( arrMatrixA[x][y] != arrMatrixB[x][y] ) return false;
+            if( arrMatrixA[x][y] !== arrMatrixB[x][y] ) return false;
         }
     }
     return true;
@@ -223,7 +278,7 @@ function loopSmooth( arrMatrix , arrFixedMatrix )
 {
     arrNewMatrix = smoothMatrix( arrMatrix, arrFixedMatrix );
     var intCount = 0;
-    while( compareMatrix( arrNewMatrix , arrMatrix ) == false )
+    while( compareMatrix( arrNewMatrix , arrMatrix ) === false )
     {
         intCount++;
         arrMatrix = arrNewMatrix;
@@ -334,5 +389,52 @@ function smoothMatrix( arrMatrix , arrFixedMatrix )
         }
     }
     return arrNewMatrix;
+}
 
+function mergeColumns( arrMatrix, arrMerge ) 
+{
+    var arrNewMatrix = [];
+    var arrWeight = [];
+    for( var i = 0; i < arrMerge.length; i++ )
+    {
+        var objMerge = arrMerge[ i ];
+        if( arrWeight[ objMerge.xAfter ] === undefined )
+        {
+            arrWeight[ objMerge.xAfter ] = [];
+        }
+        arrWeight[ objMerge.xAfter ][ objMerge.xBefore ] = objMerge.weight;
+    }
+
+    var totalWeight = arrWeight[0].sum();
+    
+    for( var xAfter = 0; xAfter < arrWeight.length; xAfter++ )
+    {
+        arrNewMatrix[xAfter] = Array();
+        var objWeight = arrWeight[ xAfter ];
+        var arrKeys = Object.keys( objWeight );
+        for( var k = 0; k < arrKeys.length; k++ )
+        {
+            var xBefore = arrKeys[k];
+            var weight = objWeight[ xBefore ];
+            for( var y = 0; y < arrMatrix[0].length; y++ )
+            {
+                if ( arrNewMatrix[xAfter][y] === undefined )
+                {
+                    arrNewMatrix[xAfter][y] = [];
+                }
+                if( arrMatrix[xBefore] !== undefined && arrMatrix[xBefore][y] !== undefined )
+                {
+                    arrNewMatrix[xAfter][y].push( arrMatrix[xBefore][y] * weight );
+                }
+            }
+        }
+    }
+    for( var x = 0; x < arrNewMatrix.length; x++ )
+    {
+        for( var y = 0; y < arrNewMatrix[0].length; y++ )
+        {
+            arrNewMatrix[x][y] = arrNewMatrix[x][y].sum() / totalWeight;
+        }
+    }
+    return arrNewMatrix;
 }
