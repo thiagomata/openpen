@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/main.js"></script>
+    <script src="javascripts/openpen.js"></script>
+    <script src="javascripts/rgbColors.js"></script>
+    <script src="javascripts/demo.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -49,6 +52,43 @@
 
 <p>There is not some easy installation process yet. Sorry :(
 But, you still can just copy our javascript :D</p>
+	<h2>
+	<a name="demo" class="anchor" href="#demo"><span class="octicon octicon-link"></span></a>Demonstration</h2>
+	<p>In the current version, we are able to resize any matrix, estimate the missing values when it grows and merge the values when reduce.</p>
+	<div id="paleta"></div>
+	<br/>
+	<br/>
+	<input type="button" id="clearOrigins" value="clear image"/>
+	<br/>
+	<br/>
+	<div class="center">
+		<div>
+			<div id="origins"></div>
+		</div>
+	</div>
+	<br/> 
+	<br/>
+	New Width = <span id="showWidth"></span> <br/>
+	<input type="range" id="thumbWidth" min="1" max="64"/>
+	<br/>
+	New Height = <span id="showHeight"></span><br/>
+	<input type="range" id="thumbHeight" min="1" max="64"/>
+	<div class="center">
+		<div>
+			<div id="destiny"></div>
+		</div>
+	</div>
+	<br/>
+	<br/>
+	<div class="center">
+		<div>
+			<div class="debug" id="debug-red"></div>
+			<div class="debug"  id="debug-green"></div>
+			<div class="debug"  id="debug-blue"></div>
+		</div>
+	</div>
+	<br/>
+	<br/>	
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/thiagomata">thiagomata</a></p>

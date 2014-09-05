@@ -1008,3 +1008,34 @@ footer {
     width: auto;
   }
 }
+
+.center {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  display: block;
+  vertical-align: middle;
+  text-align: center.
+  width: 100%;
+}
+
+.center > div {
+  display: inline-block;
+}
+
+.line{
+clear: both;
+}
+.pixel{
+float: left;
+width: 10px;
+height: 10px;
+background-color: white;
+border-width: 1px;
+border-style: solid;
+border-color: black;
+}
+.debug {
+  float: left;
+  padding: 10px;
+}
