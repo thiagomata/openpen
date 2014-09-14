@@ -1,256 +1,120 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<script src="./rgbColor.js"></script>
-	<script src="./defaultFunctions.js"></script>
-	<style>
-		.line{
-		clear: both;
-		}
-		.pixel{
-		float: left;
-		width: 10px;
-		height: 10px;
-		background-color: white;
-		border-width: 1px;
-		border-style: solid;
-		border-color: black;
-		}
-		.debug {
-			float: left;
-			padding: 10px;
-		}
-	</style>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Openpen by thiagomata</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <script src="javascripts/openpen.js"></script>
+    <script src="javascripts/rgbColors.js"></script>
+    <script src="javascripts/demo.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
   </head>
   <body>
+
+      <header>
+        <h1>Openpen</h1>
+        <p>Javascript open draw reader</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/thiagomata/openpen" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/thiagomata/openpen/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/thiagomata/openpen/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h3>
+<a name="openpen" class="anchor" href="#openpen"><span class="octicon octicon-link"></span></a>Openpen</h3>
+
+<p>We are working on some easy way to convert 2D drawing into objects. In this purpose, this module needs to be able to resize and rotate the elements and compare them with the known templates.</p>
+
+<h2>
+<a name="instalation" class="anchor" href="#instalation"><span class="octicon octicon-link"></span></a>Instalation</h2>
+
+<p>There is not some easy installation process yet. Sorry :(
+But, you still can just copy our javascript :D</p>
+	<h2>
+	<a name="demo" class="anchor" href="#demo"><span class="octicon octicon-link"></span></a>Demonstration</h2>
+	<p>In the current version, we are able to resize any matrix, estimate the missing values when it grows and merge the values when reduce.</p>
 	<div id="paleta"></div>
 	<br/>
 	<br/>
-	<div id="origem"></div>
-	&lt;== click here
+	<input type="button" id="clearOrigins" value="clear image"/>
+	<br/>
+	<br/>
+	<div class="center">
+		<div>
+			<div id="origins"></div>
+		</div>
+	</div>
 	<br/> 
 	<br/>
-	New Width = <br/>
+	New Width = <span id="showWidth"></span> <br/>
 	<input type="range" id="thumbWidth" min="1" max="64"/>
-	<span id="showWidth"></span>
 	<br/>
-	New Height = <br/>
+	New Height = <span id="showHeight"></span><br/>
 	<input type="range" id="thumbHeight" min="1" max="64"/>
-	<span id="showHeight"></span>
-	<div id="destino"></div>
+	<div class="center">
+		<div>
+			<div id="destiny"></div>
+		</div>
+	</div>
+  <br/>
+  <br/>
+  <div class="center">
+    <div>
+      <div class="debug" id="debug-red"></div>
+      <div class="debug"  id="debug-green"></div>
+      <div class="debug"  id="debug-blue"></div>
+    </div>
+  </div>
+  <br/>
+  <br/>
+  <div class="center">
+    <div>
+      <div class="debug"  id="heavyRed"></div>
+      <div class="debug"  id="heavyGreen"></div>
+      <div class="debug"  id="heavyBlue"></div>
+    </div>
+  </div>
 	<br/>
-	<br/>
-	<div class="debug" id="debug-red"></div>
-	<div class="debug"  id="debug-green"></div>
-	<div class="debug"  id="debug-blue"></div>
-	<br/>
-	<br/>
-	<script>
-		var intWidth = 16;
-		var intHeight = 16;
-		var intThumbWidth = 11;
-		var intThumbHeight = 11;
+	<br/>	
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/thiagomata">thiagomata</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-54503933-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
 
-		document.getElementById("thumbWidth").value = intThumbWidth;
-		document.getElementById("showWidth").innerHTML = intThumbWidth;
-		document.getElementById("thumbWidth").addEventListener( 
-			"change",
-			function(){
-				intThumbWidth = this.value
-				document.getElementById("showWidth").innerHTML = intThumbWidth;
-				makeThumbnail();
-			}
-		)
-		document.getElementById("thumbHeight").value = intThumbHeight;
-		document.getElementById("showHeight").innerHTML = intThumbHeight;
-		document.getElementById("thumbHeight").addEventListener( 
-			"change",
-			function(){
-				intThumbHeight = this.value
-				document.getElementById("showHeight").innerHTML = intThumbHeight;
-				makeThumbnail();
-			}
-		)
-
-		function debugMatrix( arrMatrix, arrFixedMatrix, strColor ) {
-			drawMatrix(
-				{
-					red:   strColor == 'red'   ? arrMatrix : createMatrix( arrMatrix.length, arrMatrix[0].length, 0 ), 
-					green: strColor == 'green' ? arrMatrix : createMatrix( arrMatrix.length, arrMatrix[0].length, 0 ),
-					blue:  strColor == 'blue'  ? arrMatrix : createMatrix( arrMatrix.length, arrMatrix[0].length, 0 )
-				}, 
-				document.getElementById( "debug-" + strColor  )
-			)
-			drawFixed( document.getElementById( "debug-" + strColor  ), arrFixedMatrix );
-		}
-
-		function drawFixed( objDivMatrix, arrFixedMatrix ) {
-			var arrLines = objDivMatrix.childNodes;
-			for( var y = 0; y < arrLines.length ; y++ )
-			{
-				var objLine = arrLines[y];
-				var arrPixels = objLine.getElementsByTagName("span");
-
-				for( var x = 0; x < arrPixels.length ; x++ )
-				{
-					var objPixel = arrPixels[x];
-					if( arrFixedMatrix[x][y] == 1) {
-						objPixel.style.borderWidth = "1px";
-						objPixel.style.borderColor = "white";
-						objPixel.style.borderStyle = "solid";
-						objPixel.title += " fixed";
-					} else {
-						objPixel.title += " estimated";
-					}
-				}
-			}			
-		}
-		function pickColor( arrMatrix, x, y, notFound ) {
-			if( arrMatrix[x] == null ) {
-				return notFound;
-			}
-			if( arrMatrix[x][y] == null ) {
-				return notFound;
-			}
-			return arrMatrix[x][y];
-		}
-
-		function drawMatrix( objMatrixRGB, objDiv ) {
-			console.log( "drawMatrix ", objMatrixRGB );
-			objDiv.innerHTML = "";
-			var arrMatrixRed   = objMatrixRGB.red;
-			var arrMatrixGreen = objMatrixRGB.green;
-			var arrMatrixBlue  = objMatrixRGB.blue;
-			for( var y = 0; y < arrMatrixRed[0].length; y++ )
-			{
-				var objLine = document.createElement("div");
-				objLine.className = "line";
-
-				for( var x = 0; x < arrMatrixRed.length; x++ )
-				{
-					var intRed   = Math.round(pickColor(arrMatrixRed, x, y, 255) );
-					var intGreen = Math.round(pickColor(arrMatrixGreen, x, y, 0) );
-					var intBlue  = Math.round(pickColor(arrMatrixBlue, x, y, 0) );
-					var objPixel = document.createElement("span");
-					objPixel.className = "pixel";
-					objLine.appendChild(objPixel);
-					objPixel.style.backgroundColor = "rgb("+intRed+","+intGreen+","+intBlue+")";
-					objPixel.title = "["+x+","+y+"] rgb("+intRed+","+intGreen+","+intBlue+")";
-					objLine.appendChild( objPixel );
-				}
-				objDiv.appendChild(objLine);
-			}			
-		}
-
-		function makePallete() {
-			var intColors = 10;
-			var arrColors = Array();
-			for( var intColor = 0; intColor < 255; intColor += intColors )
-			{
-				arrColors.push( Array( intColor , intColor , intColor ) );
-			}
-			for( var intColor = 0; intColor < 255; intColor += intColors )
-			{
-				arrColors.push( Array( 255 - intColor , 255 - intColor , intColor ) );
-			}
-			for( var intColor = 0; intColor < 255; intColor += intColors )
-			{
-				arrColors.push( Array( intColor , 255 - intColor , 255 - intColor ) );
-			}
-			for( var intColor = 0; intColor < 255; intColor += intColors )
-			{
-				arrColors.push( Array( 255 - intColor , intColor , 255 - intColor ) );
-			}
-
-			for( var intElement = 0; intElement < arrColors.length; intElement++ )
-			{
-				var objPencil = document.createElement("span");
-				objPencil.className = "pixel";
-				objPencil.style.backgroundColor = "rgb(" + arrColors[intElement].join() + ")";
-				objPencil.onclick = function(){ window.pencilColor = this.style.backgroundColor };
-				document.getElementById("paleta").appendChild(objPencil);
-			}
-			window.pencilColor = "rgb(255,0,0)";
-		}
-
-		makePallete();
-
-        window.draw = function() 
-        {
-            for( var x = 0; x < intWidth; x++ )
-            {
-                    var objLine = document.createElement("div");
-                    objLine.className = "line";
-                    for( var y = 0; y <  intHeight; y++ )
-                    {
-                            var objPixel = document.createElement("span");
-                            var dy = (y - intHeight / 2);
-                            var dx = (x - intWidth / 2);
-                            var distance = Math.sqrt( dx*dx + dy*dy );
-                            var radio = 7;
-                            if( distance < Math.round(radio) ) {
-                                var color = Math.round( 255 * ( 1 - distance/(radio+1) ) );
-                                console.log("color=",color);
-                                var rgbColor = "rgb("+color+","+color+","+color+")";
-                                console.log(rgbColor);
-                                objPixel.style.backgroundColor = rgbColor;
-                            } else if ( x > intWidth * 0.6 ) {
-                                objPixel.style.backgroundColor = "rgb(0,0," + Math.round( 200 * x / intWidth ) + ")"  ;
-                            }
-                            objPixel.className = "pixel";
-                            objLine.appendChild(objPixel);
-                            objPixel.onclick = function(){ this.style.backgroundColor = window.pencilColor; window.makeThumbnail() };
-                    }
-                    document.getElementById("origem").appendChild( objLine );
-            }
-            window.makeThumbnail();
-        }
-                
-		window.makeThumbnail = function makeThumbnail()
-		{
-			var arrMatrixRed = createMatrix( intWidth, intHeight , 0);
-			var arrMatrixGreen = createMatrix( intWidth, intHeight , 0);
-			var arrMatrixBlue = createMatrix( intWidth, intHeight, 0 );
-			var arrLines = document.getElementById("origem").childNodes;
-			for( var y = 0; y < arrLines.length ; y++ )
-			{
-				var objLine = arrLines[y];
-				var arrPixels = objLine.getElementsByTagName("span");
-
-				for( var x = 0; x < arrPixels.length ; x++ )
-				{
-					var objPixel = arrPixels[x];
-					var strColor = objPixel.style.backgroundColor;
-					if( strColor == false )
-					{
-						strColor = "rgb(255,255,255)";
-					}
-					var objColor = new RGBColor( strColor );
-					arrMatrixRed[x][y]   = objColor.r;
-					arrMatrixGreen[x][y] = objColor.g;
-					arrMatrixBlue[x][y]  = objColor.b;
-				}
-			}
-
-			var objThumbMatrix =  expandMatrixRGB(
-				{
-					red:arrMatrixRed,
-					green:arrMatrixGreen,
-					blue:arrMatrixBlue
-				},
-				intThumbWidth,
-				intThumbHeight
-			);
-
-			drawMatrix( 
-				objThumbMatrix, 
-				document.getElementById("destino")
-			);
-		}
-        
-        window.draw();
-	</script>
   </body>
 </html>
