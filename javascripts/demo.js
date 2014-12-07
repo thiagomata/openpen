@@ -9,12 +9,17 @@ intThumbWidth = 11;
 intThumbHeight = 11;
 
 debugMatrix = function(arrMatrix, arrFixedMatrix, strColor) {
+  if( strColor === undefined ) {
+    strColor = "red";
+  }
   drawMatrix({
     red: (strColor === "red" ? arrMatrix : createMatrix(arrMatrix.length, arrMatrix[0].length, 0)),
     green: (strColor === "green" ? arrMatrix : createMatrix(arrMatrix.length, arrMatrix[0].length, 0)),
     blue: (strColor === "blue" ? arrMatrix : createMatrix(arrMatrix.length, arrMatrix[0].length, 0))
   }, document.getElementById("debug-" + strColor));
-  drawFixed(document.getElementById("debug-" + strColor), arrFixedMatrix);
+  if( arrFixedMatrix !== undefined ) {
+    drawFixed(document.getElementById("debug-" + strColor), arrFixedMatrix);
+  }
 };
 
 drawFixed = function(objDivMatrix, arrFixedMatrix) {

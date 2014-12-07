@@ -1,5 +1,9 @@
 var addColumn, addLine, compareMatrix, createMatrix, createVector, expandMatrix, expandMatrixRGB, loopSmooth, mergeColumns, mergeLines, smoothMatrix, mergeColumnsFixed, mergeLinesFixed;
 
+if( !window.debugMatrix ) {
+  window.debugMatrix = function(){};
+}
+
 expandMatrixRGB = function(objMatrixRGB, intNewWidth, intNewHeight) {
   var arrNewMatrixBlue, arrNewMatrixGreen, arrNewMatrixRed;
   arrNewMatrixRed = expandMatrix(objMatrixRGB.red, intNewWidth, intNewHeight, "red");
@@ -75,7 +79,7 @@ expandMatrix = function(arrMatrix, intNewWidth, intNewHeight, strColor) {
     arrFixedMatrix = mergeColumnsFixed(arrFixedMatrix, arrMerge);
   }
   intYCounter = -1 * intProportionY / 2;
-  if (intNewHeight > intHeight) {
+  if (intNewHeight > intMatrixHeight) {
     y = 0;
     while (y < intNewHeight) {
       intYCounter += intProportionY;
@@ -128,7 +132,7 @@ expandMatrix = function(arrMatrix, intNewWidth, intNewHeight, strColor) {
     arrFixedMatrix = mergeLinesFixed(arrFixedMatrix, arrMerge);
   }
   resultMatrix = loopSmooth(arrNewMatrix, arrFixedMatrix);
-  debugMatrix(resultMatrix, arrFixedMatrix, strColor);
+  window.debugMatrix(resultMatrix, arrFixedMatrix, strColor);
   return resultMatrix;
 };
 
@@ -425,7 +429,7 @@ mergeLinesFixed = function(arrMatrix, arrMerge) {
   return arrNewMatrix;
 }
 
-getSumCircle = function( arrMatrix, objCenter, radiusX, radiusY, newValue ) {
+var getSumCircle = function( arrMatrix, objCenter, radiusX, radiusY, newValue ) {
   var intYMin = objCenter.y - Math.floor( radiusY );
   var intYMax = objCenter.y + Math.floor( radiusY );
   var intXMax = objCenter.x + Math.floor( radiusX );
@@ -449,7 +453,7 @@ getSumCircle = function( arrMatrix, objCenter, radiusX, radiusY, newValue ) {
   return sum
 }
 
-getHeavy = function(arrMatrix) {
+var getHeavy = function(arrMatrix) {
   var intWidth = arrMatrix.length;
   var intHeight = arrMatrix[0].length;
   var fltWidthRadius  = Math.round( intWidth  / 4 );
@@ -482,6 +486,92 @@ getHeavy = function(arrMatrix) {
   }
   return arrHeavy;
 }
+
+var centerMatrix = function(arrMatrix){
+  var width = arrMatrix.length;
+  var height = arrMatrix[0].length;
+  var centerX = Math.round((width - 1)/2);
+  var centerY = Math.round((height - 1)/2);
+  var arrNewMatrix = [];
+  var newX, newY;
+  for( var x = 0; x < width; x++ ) {
+    for( var y = 0; y < height; y++ ) {
+      newX = x - centerX;
+      newY = y - centerY;
+      if( arrNewMatrix[ newX ] === undefined ) {
+        arrNewMatrix[ newX ] = [];
+      }
+      arrNewMatrix[ newX ][ newY ] = arrMatrix[x][y];
+    }
+  }
+  return arrNewMatrix;
+}
+/**
+ * @param Matrix arrMatrix
+ * @param integer intStep [1..36]
+ **/
+var rotateMatrix = function(arrMatrix, intStep ){
+  var arrNewMatrix = [];
+  if( arrMatrix.length === 0 ) {
+    return [];
+  }
+  
+  var intSteps = 36;
+
+  var width = arrMatrix.length;
+  var height = arrMatrix[0].length;
+  var centerX = Math.round((width - 1)/2);
+  var centerY = Math.round((height - 1)/2);
+
+  var newX;
+  var newY;
+  var matrixCos;
+  var matrixSin;
+  
+  var arrRotateMatrix = [];
+  var minXRotate = 0;
+  var maxXRotate = 0;
+  var minYRotate = 0;
+  var maxYRotate = 0;
+  var x,y;
+  
+  for( x = 0; x < width; x++ ) {
+    for( y = 0; y < height; y++ ) {
+      newX = x - centerX;
+      newY = y - centerY;
+      if( arrRotateMatrix[ newX ] === undefined ) {
+        arrRotateMatrix[ newX ] = [];
+      }
+      arrRotateMatrix[ newX ][ newY ] = arrMatrix[x][y];
+      if( newX < minXRotate ) {
+        minXRotate = newX;
+      }
+      if( newX > maxXRotate ) {
+        maxXRotate = newX;
+      }
+      if( newY < minYRotate ) {
+        minYRotate = newY;
+      }
+      if( newY > maxYRotate ) {
+        maxYRotate = newY;
+      }
+    }
+  }
+  
+  for( x = minXRotate; x <= maxXRotate; x++ ) {
+    for( y = minYRotate; y <= maxYRotate; y++ ) {
+      matrixCos = Math.cos(  2 * Math.PI * ( intStep / intSteps ) );
+      matrixSin = Math.sin(  2 * Math.PI * ( intStep / intSteps ) );
+      newX = Math.round( x * matrixCos - y * matrixSin );
+      newY = Math.round( x * matrixSin + y * matrixCos );
+      if( arrNewMatrix[ newX - minXRotate ] === undefined ) {
+        arrNewMatrix[ newX - minXRotate ] = [];
+      }
+      arrNewMatrix[ newX - minXRotate ][ newY - minYRotate ] = arrRotateMatrix[x][y];
+    }
+  }
+  return arrNewMatrix;
+};
 
 Array.prototype.sum = function() {
   var L, i, sum;
